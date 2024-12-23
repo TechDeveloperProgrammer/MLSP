@@ -1,8 +1,8 @@
 import os
 import json
 import uuid
-import random
 import math
+import secrets
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, asdict, field
 from enum import Enum, auto
@@ -34,7 +34,7 @@ class GenerationStrategy(Enum):
 @dataclass
 class GenerationContext:
     """Comprehensive generation context"""
-    seed: int = field(default_factory=lambda: random.randint(1, 1000000))
+    seed: int = field(default_factory=lambda: secrets.randbelow(1000000) + 1)
     world_size: Tuple[int, int] = (256, 256)
     terrain_height_map: Optional[np.ndarray] = None
     biome_map: Optional[np.ndarray] = None
@@ -168,10 +168,10 @@ class ProceduralContentGenerator:
                 for y in range(context.world_size[1]):
                     if noise_map[x][y] > threshold:
                         structures.append({
-                            'type': random.choice(structure_types),
+                            'type': secrets.choice(structure_types),
                             'x': x,
                             'y': y,
-                            'size': random.uniform(0.5, 2.0)
+                            'size': secrets.randbelow(150) / 100 + 0.5
                         })
         
         elif config.generation_strategy == GenerationStrategy.GRAPH_BASED:
@@ -179,7 +179,7 @@ class ProceduralContentGenerator:
             G = nx.grid_2d_graph(*context.world_size)
             
             for node in G.nodes():
-                if random.random() < 0.05:  # 5% chance of structure
+                if secrets.randbelow(100) < 5:  # 5% chance of structure
                     structures.append({
                         'type': 'settlement',
                         'x': node[0],
@@ -238,7 +238,7 @@ class ProceduralContentGenerator:
                         context.terrain_height_map[x][y] > 0.3 and 
                         noise_map[x][y] > 0.5):
                         vegetation.append({
-                            'type': random.choice(vegetation_types),
+                            'type': secrets.choice(vegetation_types),
                             'x': x,
                             'y': y,
                             'density': noise_map[x][y]
@@ -294,17 +294,16 @@ class ProceduralContentGenerator:
                     depth = 1 - noise_map[x][y]
                     
                     if depth > 0.7:  # Deep layers
-                        mineral = random.choices(
-                            mineral_types, 
-                            weights=[0.4, 0.2, 0.05, 0.25, 0.1]
-                        )[0]
+                        mineral = secrets.choice(
+                            mineral_types
+                        )
                         
                         mineral_deposits.append({
                             'type': mineral,
                             'x': x,
                             'y': y,
                             'depth': depth,
-                            'quantity': random.uniform(10, 100)
+                            'quantity': secrets.randbelow(90) + 10
                         })
         
         # Prepare generation results

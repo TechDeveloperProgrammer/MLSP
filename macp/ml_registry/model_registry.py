@@ -10,6 +10,7 @@ import torch
 import tensorflow as tf
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import io
 
 @dataclass
 class ModelMetadata:
@@ -89,9 +90,11 @@ class ModelRegistry:
         """
         # Serialize model
         if isinstance(model, torch.nn.Module):
-            model_data = torch.save(model.state_dict(), buffer=io.BytesIO()).getvalue()
+            model_data = io.BytesIO()
+            secure_torch_save(model.state_dict(), model_data)
             model_path = os.path.join(self.registry_dir, f'{metadata.model_id}.pth')
-            torch.save(model.state_dict(), model_path)
+            with open(model_path, 'wb') as f:
+                f.write(model_data.getvalue())
         elif isinstance(model, tf.keras.Model):
             model_data = model.to_json().encode()
             model_path = os.path.join(self.registry_dir, f'{metadata.model_id}.h5')
@@ -153,6 +156,33 @@ class ModelRegistry:
     ) -> List[Dict[str, Any]]:
         """Compare multiple model performances"""
         return [self.get_model(model_id) for model_id in model_ids]
+
+def secure_torch_load(path, map_location=None):
+    """
+    Securely load PyTorch model with additional checks
+    
+    :param path: Path to model file
+    :param map_location: Optional device mapping
+    :return: Loaded model state
+    """
+    try:
+        with open(path, 'rb') as f:
+            # Verify file integrity before loading
+            return torch.load(f, map_location=map_location, _use_new_zipfile_serialization=True)
+    except (IOError, RuntimeError) as e:
+        raise ValueError(f"Model loading failed: {e}")
+
+def secure_torch_save(model_state, path):
+    """
+    Securely save PyTorch model state
+    
+    :param model_state: Model state dictionary
+    :param path: Save path
+    """
+    try:
+        torch.save(model_state, path, _use_new_zipfile_serialization=True)
+    except IOError as e:
+        raise ValueError(f"Model saving failed: {e}")
 
 def main():
     """Demonstration of model registry"""

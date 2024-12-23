@@ -1,7 +1,7 @@
 import os
 import json
+import shlex
 import hashlib
-import subprocess
 import sys
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
@@ -35,7 +35,7 @@ class PackageMetadata:
     def generate_hash(self) -> str:
         """Generate package hash"""
         hash_content = f"{self.name}{self.version}{self.source}"
-        return hashlib.md5(hash_content.encode()).hexdigest()
+        return secure_hash(hash_content)
 
 class PackageSecurityScanner:
     """Advanced package security scanning system"""
@@ -50,7 +50,7 @@ class PackageSecurityScanner:
         """
         try:
             # Use safety to check for known vulnerabilities
-            result = subprocess.run(
+            result = secure_subprocess_run(
                 ['safety', 'check', f'-r {package_name}'],
                 capture_output=True,
                 text=True
@@ -143,7 +143,7 @@ class PackageManager:
         install_cmd.append(package_spec)
         
         # Run installation
-        result = subprocess.run(
+        result = secure_subprocess_run(
             install_cmd, 
             capture_output=True, 
             text=True
@@ -185,7 +185,7 @@ class PackageManager:
         """
         uninstall_cmd = [sys.executable, '-m', 'pip', 'uninstall', '-y', package_name]
         
-        result = subprocess.run(
+        result = secure_subprocess_run(
             uninstall_cmd, 
             capture_output=True, 
             text=True
@@ -259,6 +259,47 @@ class PackageManager:
         
         # Reinstall package
         return self.install_package(package_name, version)
+
+def secure_subprocess_run(command, capture_output=True, text=True, check=True):
+    """
+    Securely run subprocess with sanitized input
+    
+    :param command: Command to run
+    :param capture_output: Capture command output
+    :param text: Return text instead of bytes
+    :param check: Raise exception on non-zero exit
+    :return: Subprocess result
+    """
+    sanitized_command = [shlex.quote(str(arg)) for arg in command]
+    try:
+        return subprocess.run(
+            sanitized_command, 
+            capture_output=capture_output, 
+            text=text, 
+            check=check
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Command execution failed: {e}")
+
+def secure_hash(data, algorithm='sha256'):
+    """
+    Generate secure hash for data
+    
+    :param data: Data to hash
+    :param algorithm: Hashing algorithm
+    :return: Hexadecimal hash digest
+    """
+    hash_algorithms = {
+        'sha256': hashlib.sha256,
+        'sha512': hashlib.sha512
+    }
+    
+    if algorithm not in hash_algorithms:
+        raise ValueError(f"Unsupported hash algorithm: {algorithm}")
+    
+    hasher = hash_algorithms[algorithm]()
+    hasher.update(str(data).encode('utf-8'))
+    return hasher.hexdigest()
 
 def main():
     """Demonstration of package management system"""

@@ -8,7 +8,7 @@ from dataclasses import dataclass, asdict, field
 from enum import Enum, auto
 
 import yaml
-import jinja2
+from jinja2 import Environment, select_autoescape
 import black
 import ast
 import importlib.util
@@ -103,10 +103,11 @@ class ModGenerator:
         os.makedirs(output_dir, exist_ok=True)
         
         # Jinja2 template environment
-        self.template_env = jinja2.Environment(
+        self.template_env = Environment(
             loader=jinja2.FileSystemLoader(
                 os.path.join(os.path.dirname(__file__), 'templates')
-            )
+            ),
+            autoescape=select_autoescape()
         )
     
     def _generate_mod_structure(
