@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  mlsp-core:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: mlsp-core
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+    volumes:
+      - ./:/app
+      - mlsp-data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MLSP_ENV=production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - mlsp-network
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: mlsp-postgres
+    environment:
+      POSTGRES_DB: mlsp_database
+      POSTGRES_USER: mlsp_admin
+      POSTGRES_PASSWORD: ChaosVT_SecureDB_2024!
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - mlsp-network
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: mlsp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - mlsp-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: mlsp-monitoring
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - mlsp-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: mlsp-visualization
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - mlsp-network
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://mlsp:ChaosVT@postgres:5432/mlsp_db
+    depends_on:
+      - postgres
+    networks:
+      - mlsp-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - mlsp-network
+
+  minecraft-server:
+    image: itzg/minecraft-server
+    environment:
+      - EULA=TRUE
+      - VERSION=1.20.1
+      - TYPE=PAPER
+      - DIFFICULTY=hard
+      - OPS=YourMinecraftUsername
+      - ENABLE_RCON=true
+      - RCON_PASSWORD=ChaosVT
+    ports:
+      - "25565:25565"
+    volumes:
+      - minecraft_data:/data
+    networks:
+      - mlsp-network
+
+volumes:
+  mlsp-data:
+  postgres-data:
+  redis-data:
+  grafana-data:
+  postgres_data:
+  minecraft_data:
+
+networks:
+  mlsp-network:
+    driver: bridge

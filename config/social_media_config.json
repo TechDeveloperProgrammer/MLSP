@@ -1,0 +1,20 @@
+{
+    "TWITTER_BEARER_TOKEN": "your_twitter_bearer_token_here",
+    "TWITTER_CONSUMER_KEY": "your_twitter_consumer_key_here",
+    "TWITTER_CONSUMER_SECRET": "your_twitter_consumer_secret_here",
+    "TWITTER_ACCESS_TOKEN": "your_twitter_access_token_here",
+    "TWITTER_ACCESS_TOKEN_SECRET": "your_twitter_access_token_secret_here",
+    "GITHUB_TOKEN": "your_github_personal_access_token_here",
+    "GITHUB_REPO": "yourusername/MLSP",
+    "POSTING_SCHEDULE": {
+        "RELEASE_FREQUENCY": "weekly",
+        "TRENDING_TOPIC_SCAN_INTERVAL": "daily"
+    },
+    "HASHTAGS": [
+        "MinecraftMod",
+        "OpenSource",
+        "GameDev",
+        "AIInGaming",
+        "ProceduralGeneration"
+    ]
+}

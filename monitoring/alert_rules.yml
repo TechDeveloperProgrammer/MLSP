@@ -1,0 +1,72 @@
+groups:
+- name: mlsp_alerts
+  rules:
+  # High CPU Usage Alert
+  - alert: HighCPUUsage
+    expr: node_cpu_seconds_total{mode!="idle"} / node_cpu_seconds_total * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU Usage Detected"
+      description: "CPU usage is above 80% for more than 5 minutes"
+
+  # Memory Usage Alert
+  - alert: HighMemoryUsage
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 20
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Low Memory Available"
+      description: "Less than 20% memory available"
+
+  # Disk Space Alert
+  - alert: LowDiskSpace
+    expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100 < 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Low Disk Space"
+      description: "Less than 10% disk space available"
+
+  # Service Availability Alert
+  - alert: ServiceUnavailable
+    expr: up == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service Down"
+      description: "Service has been down for more than 2 minutes"
+
+  # Minecraft Server Performance Alert
+  - alert: MinecraftServerHighLoad
+    expr: minecraft_server_tps < 19.5
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Minecraft Server Performance Degraded"
+      description: "Server TPS below acceptable threshold"
+
+  # Database Connection Alert
+  - alert: DatabaseConnectionIssue
+    expr: postgres_up == 0
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Database Connection Failed"
+      description: "Unable to connect to PostgreSQL database"
+
+  # AI Model Performance Alert
+  - alert: AIModelPerformanceDegraded
+    expr: mlsp_ai_model_performance < 0.7
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "AI Model Performance Dropped"
+      description: "AI model performance below acceptable threshold"

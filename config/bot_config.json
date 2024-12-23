@@ -1,0 +1,18 @@
+{
+    "DISCORD_BOT_TOKEN": "your_discord_bot_token_here",
+    "GITHUB_TOKEN": "your_github_personal_access_token_here",
+    "GITHUB_REPO": "yourusername/MLSP",
+    "ANNOUNCEMENT_CHANNEL_ID": 123456789,
+    "DISCUSSION_CHANNEL_ID": 123456789,
+    "METRICS_CHANNEL_ID": 123456789,
+    "ALLOWED_ROLES": [
+        "Admin",
+        "Moderator",
+        "Contributor"
+    ],
+    "MODERATION_SETTINGS": {
+        "SPAM_THRESHOLD": 5,
+        "INVITE_LINK_FILTER": true,
+        "AUTO_KICK_THRESHOLD": 3
+    }
+}

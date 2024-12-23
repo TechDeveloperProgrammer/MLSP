@@ -1,0 +1,55 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets:
+        - alertmanager:9093
+
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  # MLSP Core Service Monitoring
+  - job_name: 'mlsp-core'
+    static_configs:
+      - targets: ['mlsp-core:8000']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # PostgreSQL Monitoring
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # Redis Monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # Minecraft Server Monitoring
+  - job_name: 'minecraft-server'
+    static_configs:
+      - targets: ['minecraft-server:25565']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # Docker Host Monitoring
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['localhost:9323']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # Node Exporter (Host Machine Metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    metrics_path: '/metrics'
+    scheme: 'http'

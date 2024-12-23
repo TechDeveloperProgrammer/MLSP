@@ -1,0 +1,31 @@
+{
+    "GITHUB_TOKEN": "your_github_personal_access_token_here",
+    "GITHUB_REPO": "yourusername/MLSP",
+    "DISCUSSION_CATEGORIES": [
+        {
+            "name": "Ideas",
+            "description": "Suggest new features or improvements",
+            "color": "green"
+        },
+        {
+            "name": "Q&A",
+            "description": "Ask questions about the project",
+            "color": "blue"
+        },
+        {
+            "name": "Development",
+            "description": "Technical discussions about the project",
+            "color": "purple"
+        },
+        {
+            "name": "Community",
+            "description": "General community discussions",
+            "color": "yellow"
+        }
+    ],
+    "MODERATION_SETTINGS": {
+        "AUTO_LOCK_INACTIVE_DISCUSSIONS": true,
+        "INACTIVITY_THRESHOLD_DAYS": 90,
+        "REQUIRE_CONTRIBUTOR_LABEL": true
+    }
+}
