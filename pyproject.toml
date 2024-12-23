@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "minecraft-landscape-simulation-platform"
+version = "0.1.0"
+description = "Advanced Minecraft Landscape Simulation Platform for procedural generation and machine learning"
+authors = ["Veronica E <veronica.engineering@example.com>"]
+readme = "README.md"
+packages = [{include = "macp"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.22.0"
+pandas = "^1.4.0"
+matplotlib = "^3.5.0"
+seaborn = "^0.11.0"
+scikit-learn = "^1.1.0"
+scipy = "^1.8.0"
+networkx = "^2.8.0"
+plotly = "^5.7.0"
+optuna = "^2.10.0"
+simpy = "^4.0.0"
+noise = "^1.2.2"
+shap = "^0.41.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.1.0"
+mypy = "^0.950"
+black = "^22.3.0"
+isort = "^5.10.0"
+flake8 = "^4.0.0"
+
+[tool.poetry.scripts]
+mlsp = "macp.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
